@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#5a7d3a">
+  <title>Log a Find</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍄</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="collect">
+  <header class="bar">
+    <h1>🍄 Log a find</h1>
+    <nav><a href="map.html">Map</a><button class="link" data-signout>Sign out</button></nav>
+  </header>
+
+  <main>
+    <section class="card gps" aria-live="polite">
+      <span class="dot" id="gps-dot"></span>
+      <strong id="gps-state">Waiting for GPS…</strong>
+      <span class="coords muted" id="gps-coords">Allow location access when asked.</span>
+    </section>
+
+    <section class="species-grid" id="species" aria-label="Species"></section>
+
+    <section class="details">
+      <label>Quantity <input id="quantity" type="number" min="1" inputmode="numeric" placeholder="—"></label>
+      <label>Notes <textarea id="notes" rows="1" placeholder="Habitat, host tree, condition…"></textarea></label>
+    </section>
+
+    <button id="save" class="primary" disabled>Save find</button>
+    <p id="status" role="status"></p>
+
+    <section class="card" id="recent-card" hidden>
+      <h2>Saved this session</h2>
+      <ul class="recent" id="recent"></ul>
+    </section>
+  </main>
+
+  <script src="shared.js"></script>
+  <script src="collect.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mushroom Finds Map</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍄</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="map-page">
+  <header class="bar">
+    <h1>🍄 Mushroom finds</h1>
+    <nav><a href="collect.html">Log a find</a><button class="link" data-signout>Sign out</button></nav>
+  </header>
+
+  <div class="map-layout">
+    <aside class="panel">
+      <section>
+        <h2>Species</h2>
+        <div class="filters" id="species-filters"></div>
+      </section>
+
+      <section>
+        <h2>When</h2>
+        <select id="period" aria-label="Time period">
+          <option value="all">All time</option>
+          <option value="year">This year</option>
+          <option value="30">Last 30 days</option>
+          <option value="7">Last 7 days</option>
+        </select>
+      </section>
+
+      <section class="filters">
+        <h2>Display</h2>
+        <label><input type="checkbox" id="cluster" checked> Cluster nearby finds</label>
+      </section>
+
+      <section>
+        <div class="row">
+          <button id="refresh">Refresh</button>
+          <button id="fit">Zoom to finds</button>
+        </div>
+        <p class="muted" id="updated"></p>
+      </section>
+    </aside>
+
+    <div id="map"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+  <script src="shared.js"></script>
+  <script src="map.js"></script>
+</body>
+</html>

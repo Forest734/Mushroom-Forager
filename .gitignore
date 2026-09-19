@@ -6,3 +6,6 @@
 # Local tooling
 node_modules/
 dist/
+
+# Secrets (passwords for DB, GeoServer admin, forager login)
+.env
