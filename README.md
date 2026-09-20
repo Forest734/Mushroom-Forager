@@ -49,6 +49,8 @@ mushroom-foraging/
 ├── db/
 │   └── schema.sql          observations table
 ├── docs/                   the documentation above
+├── tools/
+│   └── dev-server.js       local stand-in for GeoServer (development only)
 ├── setup/                  numbered install/configure scripts, run in order
 │   ├── 00-make-env.sh
 │   ├── 10-install-system.sh      (sudo)

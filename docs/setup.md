@@ -50,6 +50,28 @@ after every change in `web/`.
 | Map | `…/www/mushrooms/map.html` |
 | GeoServer admin | `http://localhost:8080/geoserver/web` |
 
+## Local preview without GeoServer — `tools/dev-server.js`
+
+For working on [`web/`](../web/) before GeoServer is installed:
+
+```sh
+node tools/dev-server.js        # http://localhost:8000/collect.html
+```
+
+It serves `web/` and answers the WFS calls `shared.js` makes — `GetFeature`,
+and `Insert`/`Delete` transactions — reading and writing the real
+`observations` table through `psql`. It checks the `forager` login from `.env`
+the same way GeoServer does. Steps 1 and 2 above must have run; steps 3 to 5
+need not.
+
+It is a development aid only. It does not exercise GeoServer's own
+configuration — the WFS service level, the roles, or the access rules — so an
+end-to-end run against the real stack is still the check that the setup works.
+
+Browsers only give GPS to `localhost` or HTTPS, and this machine has no GPS
+receiver, so positions come from WiFi and are accurate to tens or hundreds of
+metres. Testing the real accuracy grading needs a phone, over HTTPS.
+
 ## Phone access
 
 The phone needs an **HTTPS** address, because browsers only give GPS to secure
