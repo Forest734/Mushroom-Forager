@@ -7,6 +7,7 @@ Database `mushrooms`, table `observations`, published by GeoServer as
 |---|---|---|---|
 | `id` | serial | yes | primary key; GeoServer feature id is `observations.<id>` |
 | `species` | text | yes | one of the species ids below (CHECK constraint) |
+| `variant` | text | no | species within a genus-level `species`; see below |
 | `observed_at` | timestamptz | yes | set by the phone at save time |
 | `accuracy_m` | real | no | GPS accuracy radius in metres |
 | `quantity` | integer | no | > 0 |
@@ -21,6 +22,32 @@ Database `mushrooms`, table `observations`, published by GeoServer as
 | `lions_mane` | Lion's Mane | *Hericium erinaceus* | `#3b82c4` |
 | `hen_of_the_woods` | Hen of the Woods | *Grifola frondosa* | `#8b5a2b` |
 | `hedgehog` | Hedgehog | *Hydnum repandum* | `#b8457a` |
+
+## Sub-species (`variant`)
+
+`Chanterelle` and `Lion's Mane` are genera, not species. Picking either one in
+the collector opens a second row of choices; the pick is optional, and *Not
+sure* leaves `variant` null. The other two entries are single species and have
+no sub-list.
+
+| `species` | `variant` | Scientific name |
+|---|---|---|
+| `chanterelle` | `cantharellus_cibarius` | *Cantharellus cibarius* |
+| `chanterelle` | `cantharellus_pallens` | *Cantharellus pallens* |
+| `chanterelle` | `cantharellus_friesii` | *Cantharellus friesii* |
+| `chanterelle` | `cantharellus_amethysteus` | *Cantharellus amethysteus* |
+| `chanterelle` | `craterellus_tubaeformis` | *Craterellus tubaeformis* |
+| `chanterelle` | `craterellus_cornucopioides` | *Craterellus cornucopioides* |
+| `lions_mane` | `hericium_erinaceus` | *Hericium erinaceus* |
+| `lions_mane` | `hericium_coralloides` | *Hericium coralloides* |
+| `lions_mane` | `hericium_flagellum` | *Hericium flagellum* |
+
+These are the European species. The map colours, the legend and the filters all
+stay keyed to `species`, so a `variant` only shows in a find's popup.
+
+Unlike `species`, `variant` has no CHECK constraint: the ids live in `VARIANTS`
+in [`web/shared.js`](../web/shared.js) alone, so adding one is a web change plus
+`setup/40-deploy-web.sh`. Finds saved before a rename keep the old id.
 
 ## Adding or renaming a species
 

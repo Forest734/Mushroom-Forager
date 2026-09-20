@@ -7,6 +7,9 @@ CREATE TABLE IF NOT EXISTS observations (
   id          serial PRIMARY KEY,
   species     text NOT NULL CHECK (species IN (
                 'chanterelle', 'lions_mane', 'hen_of_the_woods', 'hedgehog')),
+  -- Optional species within a genus-level `species`; ids come from VARIANTS in
+  -- web/shared.js. Left unconstrained so the list can grow without a migration.
+  variant     text,
   observed_at timestamptz NOT NULL,
   accuracy_m  real CHECK (accuracy_m >= 0),
   quantity    integer CHECK (quantity > 0),

@@ -16,6 +16,27 @@ const SPECIES = [
 ];
 const SPECIES_BY_ID = Object.fromEntries(SPECIES.map((s) => [s.id, s]));
 
+// Species offered under a genus-level entry once it is picked. Optional: a find
+// can be saved as the genus alone, which is what every find before this was.
+// European species; see docs/data-model.md before adding to these.
+const VARIANTS = {
+  chanterelle: [
+    { id: 'cantharellus_cibarius', name: 'Golden', latin: 'Cantharellus cibarius' },
+    { id: 'cantharellus_pallens', name: 'Pale', latin: 'Cantharellus pallens' },
+    { id: 'cantharellus_friesii', name: 'Orange', latin: 'Cantharellus friesii' },
+    { id: 'cantharellus_amethysteus', name: 'Amethyst', latin: 'Cantharellus amethysteus' },
+    { id: 'craterellus_tubaeformis', name: 'Yellowfoot', latin: 'Craterellus tubaeformis' },
+    { id: 'craterellus_cornucopioides', name: 'Black trumpet', latin: 'Craterellus cornucopioides' },
+  ],
+  lions_mane: [
+    { id: 'hericium_erinaceus', name: "Lion's Mane", latin: 'Hericium erinaceus' },
+    { id: 'hericium_coralloides', name: 'Coral tooth', latin: 'Hericium coralloides' },
+    { id: 'hericium_flagellum', name: 'Conifer coral tooth', latin: 'Hericium flagellum' },
+  ],
+};
+const VARIANT_BY_ID = Object.fromEntries(
+  Object.values(VARIANTS).flat().map((v) => [v.id, v]));
+
 class AuthError extends Error {}
 
 const Auth = {
@@ -89,13 +110,14 @@ async function transaction(body) {
   return text;
 }
 
-// obs: { species, lat, lon, accuracy, quantity, notes, observedAt: Date }
+// obs: { species, variant, lat, lon, accuracy, quantity, notes, observedAt: Date }
 // Returns the new feature id, e.g. "observations.12".
 async function insertObservation(obs) {
   const field = (name, value) => (value === null || value === undefined || value === ''
     ? '' : `<${NS_PREFIX}:${name}>${xmlEscape(value)}</${NS_PREFIX}:${name}>`);
   const text = await transaction(`<wfs:Insert><${NS_PREFIX}:${LAYER}>
     ${field('species', obs.species)}
+    ${field('variant', obs.variant)}
     ${field('observed_at', obs.observedAt.toISOString())}
     ${field('accuracy_m', obs.accuracy === null ? null : Math.round(obs.accuracy * 10) / 10)}
     ${field('quantity', obs.quantity)}

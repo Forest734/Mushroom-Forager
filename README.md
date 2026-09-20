@@ -4,6 +4,8 @@ Log mushroom finds from a phone in the field and see them on an interactive web
 map. Data is stored in PostGIS and served through GeoServer.
 
 Tracked species: **Chanterelle**, **Lion's Mane**, **Hen of the Woods**, **Hedgehog**.
+The first two are genera, so the collector offers the individual European
+species underneath — optional, see [data-model.md](docs/data-model.md#sub-species-variant).
 
 > **Status:** first iteration, written but not yet deployed. The setup scripts
 > have not been run end to end yet. There is no offline mode in this iteration;

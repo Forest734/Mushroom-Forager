@@ -5,6 +5,9 @@ const els = {
   state: document.getElementById('gps-state'),
   coords: document.getElementById('gps-coords'),
   species: document.getElementById('species'),
+  variants: document.getElementById('variants'),
+  variantsTitle: document.getElementById('variants-title'),
+  variantChips: document.getElementById('variant-chips'),
   quantity: document.getElementById('quantity'),
   notes: document.getElementById('notes'),
   save: document.getElementById('save'),
@@ -19,6 +22,7 @@ const FAIR_ACCURACY_M = 40;
 
 let position = null;
 let picked = null;
+let variant = null;
 let saving = false;
 
 for (const s of SPECIES) {
@@ -31,9 +35,36 @@ for (const s of SPECIES) {
   btn.addEventListener('click', () => {
     picked = s.id;
     for (const b of els.species.children) b.setAttribute('aria-pressed', String(b === btn));
+    showVariants(s);
     updateSave();
   });
   els.species.append(btn);
+}
+
+// The genus-level species offer a second row of choices; picking one is
+// optional, so the sub-list starts on 'Not sure'.
+function showVariants(species) {
+  variant = null;
+  const list = VARIANTS[species.id];
+  els.variants.hidden = !list;
+  els.variantChips.replaceChildren();
+  if (!list) return;
+
+  els.variantsTitle.textContent = `Which ${species.name.toLowerCase()}?`;
+  const chips = [{ id: null, name: 'Not sure', latin: species.latin }, ...list];
+  for (const v of chips) {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip';
+    chip.setAttribute('aria-pressed', String(v.id === null));
+    chip.style.setProperty('--pick', species.color);
+    chip.innerHTML = `<span class="name">${v.name}</span><span class="latin">${v.latin}</span>`;
+    chip.addEventListener('click', () => {
+      variant = v.id;
+      for (const c of els.variantChips.children) c.setAttribute('aria-pressed', String(c === chip));
+    });
+    els.variantChips.append(chip);
+  }
 }
 
 function updateSave() {
@@ -89,6 +120,7 @@ els.save.addEventListener('click', async () => {
   try {
     await insertObservation({
       species: species.id,
+      variant,
       lat: latitude,
       lon: longitude,
       accuracy,
@@ -96,10 +128,11 @@ els.save.addEventListener('click', async () => {
       notes: els.notes.value.trim(),
       observedAt: new Date(),
     });
-    setStatus(`Saved ${species.name} ±${Math.round(accuracy)} m`, 'ok');
+    const label = variant ? VARIANT_BY_ID[variant].latin : species.name;
+    setStatus(`Saved ${label} ±${Math.round(accuracy)} m`, 'ok');
     const li = document.createElement('li');
     li.innerHTML = `<span class="swatch" style="background:${species.color}"></span>`;
-    li.append(`${species.name} · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+    li.append(`${label} · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
       + (quantity > 0 ? ` · ×${quantity}` : ''));
     els.recent.prepend(li);
     els.recentCard.hidden = false;

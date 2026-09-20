@@ -86,10 +86,12 @@ function escapeHtml(s) {
 function popupHtml(f) {
   const p = f.properties;
   const s = SPECIES_BY_ID[p.species] || { name: p.species, color: '#888' };
+  const v = p.variant ? VARIANT_BY_ID[p.variant] : null;
   const when = new Date(p.observed_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
   const [lon, lat] = f.geometry.coordinates;
   return `<div class="popup">
     <h3><span class="swatch" style="background:${s.color}"></span>${escapeHtml(s.name)}</h3>
+    ${v ? `<p class="latin">${escapeHtml(v.latin)}</p>` : ''}
     <p>${when}</p>
     ${p.quantity ? `<p>Quantity: ${p.quantity}</p>` : ''}
     <p class="muted">${lat.toFixed(5)}, ${lon.toFixed(5)}${p.accuracy_m != null ? ` · ±${Math.round(p.accuracy_m)} m` : ''}</p>

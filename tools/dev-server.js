@@ -57,7 +57,7 @@ const GEOJSON_SQL = `
       'id', 'observations.' || id,
       'geometry', ST_AsGeoJSON(geom)::json,
       'properties', json_build_object(
-        'species', species, 'observed_at', observed_at,
+        'species', species, 'variant', variant, 'observed_at', observed_at,
         'accuracy_m', accuracy_m, 'quantity', quantity, 'notes', notes)
     ) ORDER BY id), '[]'::json))
   FROM observations`;
@@ -75,8 +75,8 @@ async function handleTransaction(xml) {
   if (/<(?:\w+:)?Insert[\s>]/.test(xml)) {
     const coords = tag(xml, 'coordinates');
     const [lon, lat] = (coords || '').split(',').map(Number);
-    const fid = await psql(`INSERT INTO observations (species, observed_at, accuracy_m, quantity, notes, geom)
-      VALUES (${lit(tag(xml, 'species'))}, ${lit(tag(xml, 'observed_at'))}::timestamptz,
+    const fid = await psql(`INSERT INTO observations (species, variant, observed_at, accuracy_m, quantity, notes, geom)
+      VALUES (${lit(tag(xml, 'species'))}, ${lit(tag(xml, 'variant'))}, ${lit(tag(xml, 'observed_at'))}::timestamptz,
               ${lit(tag(xml, 'accuracy_m'))}::real, ${lit(tag(xml, 'quantity'))}::int,
               ${lit(tag(xml, 'notes'))}, ST_SetSRID(ST_MakePoint(${Number(lon)}, ${Number(lat)}), 4326))
       RETURNING id`);
