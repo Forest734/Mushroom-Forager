@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Mushroom">
+  <g transform="rotate(-5 32 34)">
+    <!-- grass, tucked against the foot -->
+    <path d="M22 58c-5-1-8-5-9-9 4 2 8 5 9 9zM43 58c5-1 7-4 8-8-4 2-7 4-8 8z" fill="#6f9b4a"/>
+    <!-- stem: leans left, flares into a bulb at the foot -->
+    <path d="M27 34c0 6-3 10-4 14-1 5 3 8 9 8s10-3 9-8c-1-5-4-8-4-14z"
+          fill="#f7e7cb" stroke="#d9bd93" stroke-width="1.5" stroke-linejoin="round"/>
+    <!-- skirt ring, hanging a little crooked -->
+    <path d="M25.5 39c4.5 2.6 12 2.6 16.5-.4-.7 3.4-3 5.4-8.2 5.4-5 0-7.4-1.8-8.3-5z" fill="#ecd3a4"/>
+    <!-- cap: domed, with a wavy brim -->
+    <path d="M5 34C5 17 16 5 32 5s27 12 27 29c-3 3.4-6.4 1.2-9.4 2.7s-5 2.2-8 .6-5.2-2-8.2 0-5 2.4-8 .8-5.2-2.4-8.2-.8S8.5 37.6 5 34z"
+          fill="#e0523f" stroke="#b83c2c" stroke-width="1.6" stroke-linejoin="round"/>
+    <!-- spots -->
+    <ellipse cx="21" cy="16" rx="6.4" ry="5.2" fill="#fdf1dc"/>
+    <ellipse cx="40.5" cy="13" rx="4.2" ry="3.5" fill="#fdf1dc"/>
+    <ellipse cx="49" cy="24" rx="4.8" ry="4.2" fill="#fdf1dc"/>
+    <ellipse cx="13.5" cy="27.5" rx="3.6" ry="3.1" fill="#fdf1dc"/>
+    <ellipse cx="32" cy="25.5" rx="3.2" ry="2.8" fill="#fdf1dc"/>
+    <ellipse cx="41" cy="30" rx="2.2" ry="1.9" fill="#fdf1dc"/>
+  </g>
+</svg>

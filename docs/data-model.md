@@ -18,36 +18,84 @@ Database `mushrooms`, table `observations`, published by GeoServer as
 
 | id | Name | Scientific name | Map colour |
 |---|---|---|---|
-| `chanterelle` | Chanterelle | *Cantharellus* spp. | `#e8961c` |
-| `lions_mane` | Lion's Mane | *Hericium erinaceus* | `#3b82c4` |
+| `chanterelle` | Chanterelle | *Cantharellus* & *Craterellus* | `#e8961c` |
+| `hericium` | Hericium | *Hericium* spp. | `#3b82c4` |
 | `hen_of_the_woods` | Hen of the Woods | *Grifola frondosa* | `#8b5a2b` |
 | `hedgehog` | Hedgehog | *Hydnum repandum* | `#b8457a` |
 
 ## Sub-species (`variant`)
 
-`Chanterelle` and `Lion's Mane` are genera, not species. Picking either one in
-the collector opens a second row of choices; the pick is optional, and *Not
-sure* leaves `variant` null. The other two entries are single species and have
-no sub-list.
+`Chanterelle` and `Hericium` cover several species each. Picking either one in
+the collector opens a sub-list; the pick is optional, and *Not sure* leaves
+`variant` null. The other two entries are single species and have no sub-list.
 
-| `species` | `variant` | Scientific name |
+The sub-lists are the **eastern North American** species, and they are grouped
+by common name, because one common name usually covers several species — *Black
+trumpet* alone is four. Each entry in `VARIANTS` carries:
+
+| Field | What it is |
+|---|---|
+| `id` | the value stored in `variant`, genus and species with an underscore |
+| `group` | the common name; the collector shows it as the heading over the group |
+| `latin` | the species, shown on the chip and in the map popup |
+| `hint` | one line on what separates it from the others in its group |
+| `photo` | `photos/<id>.jpg`, set automatically from the id |
+
+### `chanterelle`
+
+| Group | `variant` | Scientific name |
 |---|---|---|
-| `chanterelle` | `cantharellus_cibarius` | *Cantharellus cibarius* |
-| `chanterelle` | `cantharellus_pallens` | *Cantharellus pallens* |
-| `chanterelle` | `cantharellus_friesii` | *Cantharellus friesii* |
-| `chanterelle` | `cantharellus_amethysteus` | *Cantharellus amethysteus* |
-| `chanterelle` | `craterellus_tubaeformis` | *Craterellus tubaeformis* |
-| `chanterelle` | `craterellus_cornucopioides` | *Craterellus cornucopioides* |
-| `lions_mane` | `hericium_erinaceus` | *Hericium erinaceus* |
-| `lions_mane` | `hericium_coralloides` | *Hericium coralloides* |
-| `lions_mane` | `hericium_flagellum` | *Hericium flagellum* |
+| Golden chanterelle | `cantharellus_flavus` | *Cantharellus flavus* |
+| Golden chanterelle | `cantharellus_tenuithrix` | *Cantharellus tenuithrix* |
+| Golden chanterelle | `cantharellus_phasmatis` | *Cantharellus phasmatis* |
+| Golden chanterelle | `cantharellus_roseocanus` | *Cantharellus roseocanus* |
+| Golden chanterelle | `cantharellus_enelensis` | *Cantharellus enelensis* |
+| Smooth chanterelle | `cantharellus_lateritius` | *Cantharellus lateritius* |
+| Cinnabar chanterelle | `cantharellus_cinnabarinus` | *Cantharellus cinnabarinus* |
+| Peach chanterelle | `cantharellus_persicinus` | *Cantharellus persicinus* |
+| Appalachian chanterelle | `cantharellus_appalachiensis` | *Cantharellus appalachiensis* |
+| Small chanterelle | `cantharellus_minor` | *Cantharellus minor* |
+| Black trumpet | `craterellus_fallax` | *Craterellus fallax* |
+| Black trumpet | `craterellus_cornucopioides` | *Craterellus cornucopioides* |
+| Black trumpet | `craterellus_foetidus` | *Craterellus foetidus* |
+| Black trumpet | `craterellus_calicornucopioides` | *Craterellus calicornucopioides* |
+| Yellowfoot | `craterellus_tubaeformis` | *Craterellus tubaeformis* |
+| Yellowfoot | `craterellus_ignicolor` | *Craterellus ignicolor* |
+| Yellowfoot | `craterellus_lutescens` | *Craterellus lutescens* |
+| Fragrant chanterelle | `craterellus_odoratus` | *Craterellus odoratus* |
 
-These are the European species. The map colours, the legend and the filters all
-stay keyed to `species`, so a `variant` only shows in a find's popup.
+### `hericium`
+
+| Group | `variant` | Scientific name |
+|---|---|---|
+| Lion's mane | `hericium_erinaceus` | *Hericium erinaceus* |
+| Bear's head tooth | `hericium_americanum` | *Hericium americanum* |
+| Comb tooth | `hericium_coralloides` | *Hericium coralloides* |
+
+The map colours, the legend and the filters all stay keyed to `species`, so a
+`variant` only shows in a find's popup.
 
 Unlike `species`, `variant` has no CHECK constraint: the ids live in `VARIANTS`
 in [`web/shared.js`](../web/shared.js) alone, so adding one is a web change plus
 `setup/40-deploy-web.sh`. Finds saved before a rename keep the old id.
+
+## Photos
+
+Each sub-species chip shows a photo from [`web/photos/`](../web/photos/), named
+after the variant id. They come from Wikimedia Commons under CC BY or CC BY-SA,
+so the author and licence have to travel with them: `web/photos/credits.html`
+carries both and the collector links to it.
+
+To add or replace one, put the Commons file name in `PHOTOS` in
+[`tools/fetch-photos.py`](../tools/fetch-photos.py) and re-run it:
+
+```sh
+python3 tools/fetch-photos.py          # 400 px wide, ~70 KB each
+```
+
+It rewrites `credits.html` from whatever it downloads, so don't edit that file
+by hand. A missing photo is not fatal — the chip hides the image and keeps the
+name and the hint.
 
 ## Adding or renaming a species
 
@@ -61,7 +109,7 @@ Species ids are defined in two places, and both must match:
    ```sql
    ALTER TABLE observations DROP CONSTRAINT observations_species_check;
    ALTER TABLE observations ADD CONSTRAINT observations_species_check
-     CHECK (species IN ('chanterelle', 'lions_mane', 'hen_of_the_woods', 'hedgehog', '<new_id>'));
+     CHECK (species IN ('chanterelle', 'hericium', 'hen_of_the_woods', 'hedgehog', '<new_id>'));
    ```
 
    Update `schema.sql` to match, then run `setup/40-deploy-web.sh`.

@@ -41,8 +41,9 @@ for (const s of SPECIES) {
   els.species.append(btn);
 }
 
-// The genus-level species offer a second row of choices; picking one is
-// optional, so the sub-list starts on 'Not sure'.
+// The genus-level species open a sub-list, grouped by the common name several
+// species share ("Black trumpet" covers four). Picking one is optional, so the
+// sub-list starts on 'Not sure'.
 function showVariants(species) {
   variant = null;
   const list = VARIANTS[species.id];
@@ -50,21 +51,53 @@ function showVariants(species) {
   els.variantChips.replaceChildren();
   if (!list) return;
 
-  els.variantsTitle.textContent = `Which ${species.name.toLowerCase()}?`;
-  const chips = [{ id: null, name: 'Not sure', latin: species.latin }, ...list];
-  for (const v of chips) {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'chip';
-    chip.setAttribute('aria-pressed', String(v.id === null));
-    chip.style.setProperty('--pick', species.color);
-    chip.innerHTML = `<span class="name">${v.name}</span><span class="latin">${v.latin}</span>`;
-    chip.addEventListener('click', () => {
-      variant = v.id;
-      for (const c of els.variantChips.children) c.setAttribute('aria-pressed', String(c === chip));
-    });
-    els.variantChips.append(chip);
+  els.variantsTitle.textContent = `Which ${species.name}?`;
+
+  const select = (chip) => {
+    for (const c of els.variants.querySelectorAll('.chip')) {
+      c.setAttribute('aria-pressed', String(c === chip));
+    }
+  };
+
+  const unsure = document.createElement('button');
+  unsure.type = 'button';
+  unsure.className = 'chip unsure';
+  unsure.setAttribute('aria-pressed', 'true');
+  unsure.style.setProperty('--pick', species.color);
+  unsure.innerHTML = `<span class="name">Not sure</span><span class="latin">${species.latin}</span>`;
+  unsure.addEventListener('click', () => { variant = null; select(unsure); });
+  els.variantChips.append(unsure);
+
+  for (const [group, members] of groupBy(list, (v) => v.group)) {
+    const heading = document.createElement('h3');
+    heading.textContent = group;
+    const row = document.createElement('div');
+    row.className = 'chips photos';
+    for (const v of members) {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip photo';
+      chip.setAttribute('aria-pressed', 'false');
+      chip.style.setProperty('--pick', species.color);
+      chip.innerHTML = `<img src="${v.photo}" alt="" loading="lazy" onerror="this.hidden = true">
+        <span class="latin">${v.latin}</span>
+        <span class="hint">${v.hint}</span>`;
+      chip.addEventListener('click', () => { variant = v.id; select(chip); });
+      row.append(chip);
+    }
+    els.variantChips.append(heading, row);
   }
+}
+
+// Keeps the order the list is written in, for both the groups and their members.
+function groupBy(list, key) {
+  const groups = new Map();
+  for (const item of list) {
+    const k = key(item);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(item);
+  }
+  return groups;
 }
 
 function updateSave() {

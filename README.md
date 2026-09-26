@@ -1,11 +1,12 @@
-# mushroom-foraging
+# Mushroom Forager
 
 Log mushroom finds from a phone in the field and see them on an interactive web
 map. Data is stored in PostGIS and served through GeoServer.
 
-Tracked species: **Chanterelle**, **Lion's Mane**, **Hen of the Woods**, **Hedgehog**.
-The first two are genera, so the collector offers the individual European
-species underneath — optional, see [data-model.md](docs/data-model.md#sub-species-variant).
+Tracked species: **Chanterelle**, **Hericium**, **Hen of the Woods**, **Hedgehog**.
+The first two cover several species each, so the collector offers the individual
+eastern North American species underneath, with photos and grouped by common
+name — optional, see [data-model.md](docs/data-model.md#sub-species-variant).
 
 > **Status:** first iteration, written but not yet deployed. The setup scripts
 > have not been run end to end yet. There is no offline mode in this iteration;
@@ -52,7 +53,8 @@ mushroom-foraging/
 │   └── schema.sql          observations table
 ├── docs/                   the documentation above
 ├── tools/
-│   └── dev-server.js       local stand-in for GeoServer (development only)
+│   ├── dev-server.js       local stand-in for GeoServer (development only)
+│   └── fetch-photos.py     downloads web/photos/ from Wikimedia Commons
 ├── setup/                  numbered install/configure scripts, run in order
 │   ├── 00-make-env.sh
 │   ├── 10-install-system.sh      (sudo)
@@ -64,5 +66,8 @@ mushroom-foraging/
     ├── collect.html/.js    phone collector (GPS + species + save)
     ├── map.html/.js        desktop map (filters, clustering, delete)
     ├── shared.js           species list, login, WFS calls
-    └── styles.css
+    ├── styles.css
+    ├── mushroom.svg        the mushroom in the header and the tab icon
+    ├── fonts/fascinate/    display face, copied from ~/dev/assets/fonts
+    └── photos/             sub-species photos + credits.html
 ```

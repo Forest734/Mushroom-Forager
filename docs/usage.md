@@ -9,8 +9,9 @@
    - green: within ±15 m
    - amber: within ±40 m
    - red: worse; wait if you can
-4. Tap the species. Chanterelle and Lion's Mane then offer the individual
-   species underneath — tap one, or leave it on *Not sure* to record the genus
+4. Tap the species. Chanterelle and Hericium then offer the individual species
+   underneath, with a photo and a one-line hint each, grouped by the common name
+   they share — tap one, or leave it on *Not sure* to record the genus
    only. Optionally enter a quantity and notes (habitat, host tree, condition).
 5. Tap **Save find**. A green message confirms the save, and the find is added to
    *Saved this session*.
