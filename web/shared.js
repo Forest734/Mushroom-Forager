@@ -56,6 +56,12 @@ for (const list of Object.values(VARIANTS)) {
 const VARIANT_BY_ID = Object.fromEntries(
   Object.values(VARIANTS).flat().map((v) => [v.id, v]));
 
+// Sign-in is off for now: the pages load straight into the app and no
+// Authorization header is sent. Set this back to true to get the overlay back —
+// the real GeoServer still refuses anonymous access to the layer, so this only
+// works against tools/dev-server.js until the access rules are relaxed too.
+const REQUIRE_LOGIN = false;
+
 class AuthError extends Error {}
 
 const Auth = {
@@ -159,6 +165,19 @@ function requireLogin(onReady) {
     Auth.clear();
     location.reload();
   }));
+
+  if (!REQUIRE_LOGIN) {
+    document.querySelectorAll('[data-signout]').forEach((el) => el.remove());
+    fetchObservations().then(onReady, (err) => {
+      document.body.prepend(Object.assign(document.createElement('p'), {
+        className: 'msg', style: 'padding: 12px 16px',
+        textContent: err instanceof AuthError
+          ? 'This layer needs a sign-in — set REQUIRE_LOGIN back to true in shared.js.'
+          : err.message,
+      }));
+    });
+    return;
+  }
 
   const overlay = document.createElement('div');
   overlay.className = 'login-overlay';

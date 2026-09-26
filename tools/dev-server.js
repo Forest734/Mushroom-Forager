@@ -43,7 +43,12 @@ const tag = (xml, name) => {
     .replace(/&quot;/g, '"').replace(/&amp;/g, '&') : null;
 };
 
+// Matches REQUIRE_LOGIN in web/shared.js; with it false the stand-in serves WFS
+// to anyone, which is fine for a server bound to localhost.
+const REQUIRE_LOGIN = false;
+
 function authorized(req) {
+  if (!REQUIRE_LOGIN) return true;
   const header = req.headers.authorization || '';
   if (!header.startsWith('Basic ')) return false;
   const [user, ...rest] = Buffer.from(header.slice(6), 'base64').toString().split(':');

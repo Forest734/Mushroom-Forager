@@ -2,8 +2,8 @@
 
 ## In the field — collector (phone)
 
-1. Open `collect.html` over HTTPS and sign in once. The login is remembered on
-   that phone.
+1. Open `collect.html` over HTTPS. There is no sign-in at the moment — see
+   [security.md](security.md#sign-in) for turning it back on.
 2. Allow location access when the browser asks.
 3. Wait for a good fix. The dot shows GPS accuracy:
    - green: within ±15 m

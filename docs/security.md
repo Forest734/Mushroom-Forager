@@ -2,6 +2,19 @@
 
 Foraging spots are private, so the layer is closed to anonymous users.
 
+## Sign-in
+
+**The web app's sign-in is off right now.** `REQUIRE_LOGIN` in
+[`web/shared.js`](../web/shared.js) is `false`, so the pages load straight into
+the app and send no credentials, and `tools/dev-server.js` has the matching
+switch and serves WFS to anyone on localhost.
+
+Set both back to `true` to get the overlay and Basic auth back. Note that only
+the web app's own prompt is off: the accounts and access rules below still
+exist, so against a real GeoServer the layer will refuse anonymous requests
+until those are relaxed as well — which would leave the data open to anyone who
+can reach the server.
+
 ## Logins
 
 | Account | Used by | Password in `.env` |
