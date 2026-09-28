@@ -166,6 +166,8 @@ label { display: grid; gap: 4px; font-size: 0.9rem; color: var(--muted); }
 #status.err { color: var(--danger); }
 .recent { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .recent li { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+.device:not([hidden]) { display: grid; gap: 10px; justify-items: start; }
+.device p { margin: 0; }
 
 /* ---------- map.html (desktop) ---------- */
 .map-page { height: 100vh; height: 100dvh; display: grid; grid-template-rows: auto 1fr; }

@@ -41,11 +41,18 @@
       <h2>Saved this session</h2>
       <ul class="recent" id="recent"></ul>
     </section>
+
+    <section class="card device" data-device hidden>
+      <p class="muted">Finds are saved on this phone only. Export them to keep a
+        backup, or to import them into the map on another device.</p>
+      <button type="button" data-export>Export finds</button>
+    </section>
     <p class="muted credit-link">Species photos from Wikimedia Commons —
       <a href="photos/credits.html">credits and licences</a>.</p>
   </main>
 
   <script src="shared.js"></script>
+  <script src="store.js"></script>
   <script src="collect.js"></script>
 </body>
 </html>

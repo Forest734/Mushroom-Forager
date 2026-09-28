@@ -179,4 +179,5 @@ els.save.addEventListener('click', async () => {
   }
 });
 
+wireDeviceStore();
 requireLogin(startGps);

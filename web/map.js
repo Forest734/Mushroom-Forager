@@ -169,6 +169,7 @@ els.cluster.addEventListener('change', render);
 els.refresh.addEventListener('click', load);
 els.fit.addEventListener('click', fitToFinds);
 
+wireDeviceStore(() => { firstLoad = true; load(); });
 requireLogin(() => {
   load();
   setInterval(load, REFRESH_MS);

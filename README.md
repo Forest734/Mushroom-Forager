@@ -17,6 +17,12 @@ phone:   collect.html ──WFS-T Insert──▶ GeoServer ──▶ PostGIS (m
 desktop: map.html     ◀──WFS GetFeature (GeoJSON)──┘
 ```
 
+**On GitHub Pages.** The app is also published at
+<https://forest734.github.io/Mushroom-Forager/>, which needs no server. There,
+each browser keeps its own finds, and nothing is sent anywhere. To get finds
+from the phone onto the map on a computer, use **Export** on the phone and
+**Import** on the map. See [architecture.md](docs/architecture.md#github-pages).
+
 ## Quick start
 
 ```sh
@@ -52,7 +58,12 @@ mushroom-foraging/
 ├── db/
 │   └── schema.sql          observations table
 ├── docs/                   the documentation above
+├── .github/workflows/
+│   └── pages.yml           builds and deploys the GitHub Pages site
+├── pages/
+│   └── store.js            the Pages build's store.js: finds kept in the browser
 ├── tools/
+│   ├── build-pages.sh      builds the GitHub Pages site into dist/
 │   ├── dev-server.js       local stand-in for GeoServer (development only)
 │   └── fetch-photos.py     downloads web/photos/ from Wikimedia Commons
 ├── setup/                  numbered install/configure scripts, run in order
@@ -65,7 +76,8 @@ mushroom-foraging/
     ├── index.html          landing page
     ├── collect.html/.js    phone collector (GPS + species + save)
     ├── map.html/.js        desktop map (filters, clustering, delete)
-    ├── shared.js           species list, login, WFS calls
+    ├── shared.js           species lists, sign-in
+    ├── store.js            load, save and delete finds over WFS
     ├── styles.css
     ├── mushroom.svg        the mushroom in the header and the tab icon
     ├── fonts/fascinate/    display face, copied from ~/dev/assets/fonts

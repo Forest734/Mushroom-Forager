@@ -38,3 +38,28 @@
   included.
 - **One flat table** is enough for four species and a few fields. See
   [data-model.md](data-model.md).
+
+## GitHub Pages
+
+The app is also published at <https://forest734.github.io/Mushroom-Forager/>.
+Pages only serves files, so that copy has no GeoServer, and it keeps finds in
+the browser instead.
+
+- **One file differs.** Everything that loads, saves or deletes finds is in
+  [`web/store.js`](../web/store.js). `tools/build-pages.sh` copies `web/` to
+  `dist/` and replaces `store.js` with
+  [`pages/store.js`](../pages/store.js), which keeps the finds in
+  `localStorage` as the same GeoJSON the WFS layer returns. `collect.js` and
+  `map.js` are the same in both.
+- **`ON_DEVICE`**, set by each `store.js`, shows the `[data-device]` sections:
+  **Export** on the collector, and **Export** and **Import** on the map. The
+  GeoServer version keeps them hidden.
+- **Finds never leave the device.** Each browser has its own finds. Export
+  downloads them as a `.geojson` file; Import adds a file's finds and skips any
+  already there. Find ids are random UUIDs, so exports from several devices
+  merge without clashing. Imported finds are rebuilt field by field, since the
+  map puts them into its popups.
+- **Deploy.** [`.github/workflows/pages.yml`](../.github/workflows/pages.yml)
+  builds and deploys on every push to `master`. The repository's Settings →
+  Pages → Source must be **GitHub Actions**.
+

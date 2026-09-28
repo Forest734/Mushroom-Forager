@@ -1,10 +1,10 @@
 // Local stand-in for GeoServer, so web/ can be exercised before the real stack
 // exists: serves web/ statically and answers the handful of WFS calls that
-// shared.js makes, backed by the real PostGIS `observations` table via psql.
+// store.js makes, backed by the real PostGIS `observations` table via psql.
 //
 //   node tools/dev-server.js [port]    (default 8000)
 //
-// It is a development aid, not part of the deployment: only the calls shared.js
+// It is a development aid, not part of the deployment: only the calls store.js
 // makes are implemented, and nothing here tests GeoServer's own configuration
 // (WFS service level, roles, access rules). Needs setup/00-make-env.sh and
 // setup/10-install-system.sh to have run.

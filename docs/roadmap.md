@@ -5,6 +5,8 @@
 - [x] Phone collector: GPS, 4 species, quantity, notes, saved over WFS-T
 - [x] Desktop map: species and date filters, clustering, details, delete
 - [x] Private layer with a forager login
+- [x] Published on GitHub Pages, with finds kept on the device and moved
+      between devices by GeoJSON export and import
 - [ ] Run the setup end to end and test insert, read, and delete
 - [ ] HTTPS for the phone (see [security.md](security.md#https))
 - [ ] First real finds in the field

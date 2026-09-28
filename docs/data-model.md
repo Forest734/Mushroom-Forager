@@ -119,7 +119,8 @@ Species ids are defined in two places, and both must match:
 Add the column in PostGIS and in `schema.sql`. Then reload the layer's
 attributes in GeoServer: in the admin UI, open *Layers → observations → Reload
 feature type*. Finally, send the new field from `insertObservation()` in
-`shared.js`.
+`web/store.js`, and store it in `pages/store.js` too (`insertObservation()`,
+and the fields `importObservations()` keeps).
 
 ## Backup
 

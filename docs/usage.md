@@ -37,3 +37,23 @@ one-tap access.
 - **Delete.** Removes a find permanently from the database, after you confirm.
 - The map reloads every 60 s. **Refresh** reloads it now, and **Zoom to finds**
   fits the view to all finds.
+
+## On GitHub Pages — finds on the device
+
+At <https://forest734.github.io/Mushroom-Forager/> there is no server. Each
+browser keeps its own finds, and nothing is sent anywhere. Saving works
+without a connection once the page has loaded.
+
+- **Phone to computer.** On the phone, tap **Export finds** at the bottom of
+  the collector. It downloads a `.geojson` file. Send it to the computer (by
+  AirDrop, email, or a shared drive), then click **Import** on the map and
+  pick the file. Finds already on the map are skipped, so importing the same
+  file twice is safe.
+- **Back up.** The finds live in the browser's storage. Clearing the site's
+  data or the browser's history deletes them, and Safari on iPhone may clear a
+  site's data after about a week without a visit. Export now and then to keep
+  a copy. On iPhone, the page added to the home screen is less likely to be
+  cleared, but it keeps its own finds, separate from Safari's, so pick one and
+  stick with it.
+- **Delete** on the map removes the find from that browser only.
+

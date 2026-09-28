@@ -58,7 +58,7 @@ For working on [`web/`](../web/) before GeoServer is installed:
 node tools/dev-server.js        # http://localhost:8000/collect.html
 ```
 
-It serves `web/` and answers the WFS calls `shared.js` makes — `GetFeature`,
+It serves `web/` and answers the WFS calls `store.js` makes — `GetFeature`,
 and `Insert`/`Delete` transactions — reading and writing the real
 `observations` table through `psql`. It checks the `forager` login from `.env`
 the same way GeoServer does. Steps 1 and 2 above must have run; steps 3 to 5
@@ -76,3 +76,24 @@ metres. Testing the real accuracy grading needs a phone, over HTTPS.
 
 The phone needs an **HTTPS** address, because browsers only give GPS to secure
 pages. That part isn't set up yet (see [security.md](security.md#https)).
+
+## GitHub Pages
+
+[`.github/workflows/pages.yml`](../.github/workflows/pages.yml) runs
+`tools/build-pages.sh` and deploys `dist/` on every push to `master`. It can
+also be run by hand from the Actions tab. Once, in the repository's Settings →
+Pages → Build and deployment, set Source to **GitHub Actions**.
+
+To check a build before pushing, serve it from a parent directory, so the
+pages sit under `/Mushroom-Forager/` as they do on Pages:
+
+```sh
+tools/build-pages.sh
+mkdir -p /tmp/site && ln -sfn "$PWD/dist" /tmp/site/Mushroom-Forager
+python3 -m http.server 8000 --directory /tmp/site
+# http://localhost:8000/Mushroom-Forager/collect.html
+```
+
+See [architecture.md](architecture.md#github-pages) for how the Pages copy
+differs.
+

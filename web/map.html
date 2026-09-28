@@ -38,6 +38,17 @@
         <label><input type="checkbox" id="cluster" checked> Cluster nearby finds</label>
       </section>
 
+      <section class="device" data-device hidden>
+        <h2>On this device</h2>
+        <p class="muted">Finds are saved in this browser only. Export them to keep
+          a backup, or import finds exported on another device.</p>
+        <div class="row">
+          <button type="button" data-export>Export</button>
+          <button type="button" data-import>Import</button>
+        </div>
+        <p class="muted" data-import-status role="status"></p>
+      </section>
+
       <section>
         <div class="row">
           <button id="refresh">Refresh</button>
@@ -53,6 +64,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
   <script src="shared.js"></script>
+  <script src="store.js"></script>
   <script src="map.js"></script>
 </body>
 </html>
