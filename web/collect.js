@@ -1,4 +1,4 @@
-// Phone data collector: watch the GPS, pick a species, save via WFS-T.
+// Phone data collector: watch the GPS, pick a species, take photos, save via WFS-T.
 
 const els = {
   dot: document.getElementById('gps-dot'),
@@ -10,6 +10,9 @@ const els = {
   variantChips: document.getElementById('variant-chips'),
   quantity: document.getElementById('quantity'),
   notes: document.getElementById('notes'),
+  takePhoto: document.getElementById('take-photo'),
+  photoInput: document.getElementById('photo-input'),
+  photoList: document.getElementById('photo-list'),
   save: document.getElementById('save'),
   status: document.getElementById('status'),
   recentCard: document.getElementById('recent-card'),
@@ -20,10 +23,17 @@ const els = {
 const GOOD_ACCURACY_M = 15;
 const FAIR_ACCURACY_M = 40;
 
+// Photos are shrunk to this on the long edge and re-encoded as JPEG before
+// they are kept, which also drops the camera's EXIF, GPS position included.
+const PHOTO_MAX_PX = 1280;
+const PHOTO_QUALITY = 0.8;
+
 let position = null;
 let picked = null;
 let variant = null;
 let saving = false;
+let photos = [];
+let shrinking = 0;
 
 for (const s of SPECIES) {
   const btn = document.createElement('button');
@@ -101,8 +111,51 @@ function groupBy(list, key) {
 }
 
 function updateSave() {
-  els.save.disabled = saving || !position || !picked;
+  els.save.disabled = saving || shrinking > 0 || !position || !picked;
 }
+
+async function shrinkPhoto(file) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, PHOTO_MAX_PX / Math.max(bitmap.width, bitmap.height));
+  const canvas = Object.assign(document.createElement('canvas'), {
+    width: Math.round(bitmap.width * scale), height: Math.round(bitmap.height * scale),
+  });
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  return canvas.toDataURL('image/jpeg', PHOTO_QUALITY);
+}
+
+function showPhotos() {
+  els.photoList.replaceChildren(...photos.map((src, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<img src="${src}" alt="Photo ${i + 1}">
+      <button type="button" class="remove" aria-label="Remove photo ${i + 1}">×</button>`;
+    li.querySelector('button').addEventListener('click', () => {
+      photos.splice(i, 1);
+      showPhotos();
+    });
+    return li;
+  }));
+  els.takePhoto.textContent = photos.length ? 'Take another photo' : 'Take a photo';
+}
+
+els.takePhoto.addEventListener('click', () => els.photoInput.click());
+els.photoInput.addEventListener('change', async () => {
+  const [file] = els.photoInput.files;
+  els.photoInput.value = '';
+  if (!file) return;
+  shrinking++;
+  updateSave();
+  try {
+    photos.push(await shrinkPhoto(file));
+    showPhotos();
+  } catch {
+    setStatus('That photo could not be read — try taking it again.', 'err');
+  } finally {
+    shrinking--;
+    updateSave();
+  }
+});
 
 function setStatus(text, kind = '') {
   els.status.textContent = text;
@@ -159,6 +212,7 @@ els.save.addEventListener('click', async () => {
       accuracy,
       quantity: quantity > 0 ? quantity : null,
       notes: els.notes.value.trim(),
+      photos,
       observedAt: new Date(),
     });
     const label = variant ? VARIANT_BY_ID[variant].latin : species.name;
@@ -166,11 +220,14 @@ els.save.addEventListener('click', async () => {
     const li = document.createElement('li');
     li.innerHTML = `<span class="swatch" style="background:${species.color}"></span>`;
     li.append(`${label} · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-      + (quantity > 0 ? ` · ×${quantity}` : ''));
+      + (quantity > 0 ? ` · ×${quantity}` : '')
+      + (photos.length ? ` · ${photos.length} photo${photos.length === 1 ? '' : 's'}` : ''));
     els.recent.prepend(li);
     els.recentCard.hidden = false;
     els.quantity.value = '';
     els.notes.value = '';
+    photos = [];
+    showPhotos();
   } catch (err) {
     setStatus(err instanceof AuthError ? 'Signed out — reload and sign in again.' : `Not saved: ${err.message}`, 'err');
   } finally {

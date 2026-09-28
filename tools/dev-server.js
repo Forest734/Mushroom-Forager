@@ -28,11 +28,14 @@ const env = Object.fromEntries(
     }),
 );
 
+// The SQL goes in on stdin: an insert with photos is far past the 128 KB a
+// single command-line argument may be.
 function psql(sql) {
   return new Promise((resolve, reject) => {
-    execFile('psql', ['-h', 'localhost', '-U', env.DB_USER, '-d', env.DB_NAME, '-q', '-t', '-A', '-c', sql],
-      { env: { ...process.env, PGPASSWORD: env.DB_PASSWORD } },
+    const child = execFile('psql', ['-h', 'localhost', '-U', env.DB_USER, '-d', env.DB_NAME, '-q', '-t', '-A', '-v', 'ON_ERROR_STOP=1', '-f', '-'],
+      { env: { ...process.env, PGPASSWORD: env.DB_PASSWORD }, maxBuffer: 64 * 1024 * 1024 },
       (err, stdout, stderr) => (err ? reject(new Error(stderr.trim() || err.message)) : resolve(stdout.trim())));
+    child.stdin.end(sql);
   });
 }
 
@@ -45,7 +48,7 @@ const tag = (xml, name) => {
 
 // Matches REQUIRE_LOGIN in web/shared.js; with it false the stand-in serves WFS
 // to anyone, which is fine for a server bound to localhost.
-const REQUIRE_LOGIN = false;
+const REQUIRE_LOGIN = true;
 
 function authorized(req) {
   if (!REQUIRE_LOGIN) return true;
@@ -67,6 +70,14 @@ const GEOJSON_SQL = `
     ) ORDER BY id), '[]'::json))
   FROM observations`;
 
+// GetFeature with featureID=observations.<id>&propertyName=photos, as fetchPhotos sends.
+const PHOTOS_SQL = (id) => `
+  SELECT json_build_object('type', 'FeatureCollection', 'features',
+    coalesce(json_agg(json_build_object(
+      'type', 'Feature', 'id', 'observations.' || id, 'geometry', null,
+      'properties', json_build_object('photos', photos))), '[]'::json))
+  FROM observations WHERE id = ${id}`;
+
 const TX_OK = (fid) => `<?xml version="1.0" encoding="UTF-8"?>
 <wfs:WFS_TransactionResponse version="1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc">
   <wfs:InsertResult>${fid ? `<ogc:FeatureId fid="${fid}"/>` : ''}</wfs:InsertResult>
@@ -80,10 +91,11 @@ async function handleTransaction(xml) {
   if (/<(?:\w+:)?Insert[\s>]/.test(xml)) {
     const coords = tag(xml, 'coordinates');
     const [lon, lat] = (coords || '').split(',').map(Number);
-    const fid = await psql(`INSERT INTO observations (species, variant, observed_at, accuracy_m, quantity, notes, geom)
+    const fid = await psql(`INSERT INTO observations (species, variant, observed_at, accuracy_m, quantity, notes, photos, geom)
       VALUES (${lit(tag(xml, 'species'))}, ${lit(tag(xml, 'variant'))}, ${lit(tag(xml, 'observed_at'))}::timestamptz,
               ${lit(tag(xml, 'accuracy_m'))}::real, ${lit(tag(xml, 'quantity'))}::int,
-              ${lit(tag(xml, 'notes'))}, ST_SetSRID(ST_MakePoint(${Number(lon)}, ${Number(lat)}), 4326))
+              ${lit(tag(xml, 'notes'))}, ${lit(tag(xml, 'photos'))},
+              ST_SetSRID(ST_MakePoint(${Number(lon)}, ${Number(lat)}), 4326))
       RETURNING id`);
     console.log(`  insert → observations.${fid}`);
     return TX_OK(`observations.${fid}`);
@@ -118,7 +130,8 @@ http.createServer(async (req, res) => {
         res.writeHead(200, { 'Content-Type': 'text/xml' });
         return res.end(body);
       }
-      const json = await psql(GEOJSON_SQL);
+      const one = (url.searchParams.get('featureID') || '').match(/^observations\.(\d+)$/);
+      const json = await psql(one ? PHOTOS_SQL(Number(one[1])) : GEOJSON_SQL);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(json);
     } catch (err) {

@@ -16,7 +16,6 @@
 - **Offline collection.** Queue finds on the phone while there is no signal,
   and send them when it comes back (service worker + IndexedDB). Deliberately
   left out of iteration 1.
-- **Photos.** Attach one or more photos to a find.
 - **Edit a find.** Change the species, quantity, or notes from the map (WFS
   `Update`).
 - **Revisit tracking.** Mark a spot as checked but empty, to learn which spots

@@ -33,6 +33,12 @@
       <label>Notes <textarea id="notes" rows="1" placeholder="Habitat, host tree, condition…"></textarea></label>
     </section>
 
+    <section class="shots" aria-label="Photos">
+      <ul id="photo-list"></ul>
+      <button type="button" id="take-photo">Take a photo</button>
+      <input id="photo-input" type="file" accept="image/*" capture="environment" hidden>
+    </section>
+
     <button id="save" class="primary" disabled>Save find</button>
     <p id="status" role="status"></p>
 

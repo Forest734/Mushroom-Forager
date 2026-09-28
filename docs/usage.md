@@ -2,8 +2,9 @@
 
 ## In the field — collector (phone)
 
-1. Open `collect.html` over HTTPS. There is no sign-in at the moment — see
-   [security.md](security.md#sign-in) for turning it back on.
+1. Open `collect.html` over HTTPS and sign in with the login from `.env`
+   (see [security.md](security.md#sign-in)). The phone remembers it until you
+   tap **Sign out**. The GitHub Pages copy has no sign-in.
 2. Allow location access when the browser asks.
 3. Wait for a good fix. The dot shows GPS accuracy:
    - green: within ±15 m
@@ -13,7 +14,11 @@
    underneath, with a photo and a one-line hint each, grouped by the common name
    they share — tap one, or leave it on *Not sure* to record the genus
    only. Optionally enter a quantity and notes (habitat, host tree, condition).
-5. Tap **Save find**. A green message confirms the save, and the find is added to
+5. Optionally tap **Take a photo**. The camera opens; take the shot and it
+   appears under the notes. Tap it again for more (cap, gills, stem), or **×**
+   on a photo to drop it. Photos are shrunk to 1280 px and saved without the
+   camera's location data.
+6. Tap **Save find**. A green message confirms the save, and the find is added to
    *Saved this session*.
 
 Saving needs a connection. If it fails, the form keeps what you entered, so
@@ -33,7 +38,7 @@ one-tap access.
 - **Basemap.** Use the layer control at the top right to switch between Dark
   (the default), Streets, Topo, and Satellite.
 - **Details.** Click a point to see its time, quantity, coordinates, GPS
-  accuracy, and notes.
+  accuracy, notes, and photos. Click a photo to open it full size in a new tab.
 - **Delete.** Removes a find permanently from the database, after you confirm.
 - The map reloads every 60 s. **Refresh** reloads it now, and **Zoom to finds**
   fits the view to all finds.
@@ -48,7 +53,8 @@ without a connection once the page has loaded.
   the collector. It downloads a `.geojson` file. Send it to the computer (by
   AirDrop, email, or a shared drive), then click **Import** on the map and
   pick the file. Finds already on the map are skipped, so importing the same
-  file twice is safe.
+  file twice is safe. Photos travel in the file too, so it grows by about
+  200 KB per photo.
 - **Back up.** The finds live in the browser's storage. Clearing the site's
   data or the browser's history deletes them, and Safari on iPhone may clear a
   site's data after about a week without a visit. Export now and then to keep

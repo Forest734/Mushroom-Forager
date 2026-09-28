@@ -29,10 +29,13 @@ function exceptionText(text) {
   return node ? node.textContent.trim() : text.slice(0, 300);
 }
 
-async function fetchObservations() {
+// Every column but the photos, which the map fetches one find at a time.
+const LIST_PROPERTIES = 'species,variant,observed_at,accuracy_m,quantity,notes,geom';
+
+async function getFeature(extra) {
   const params = new URLSearchParams({
     service: 'WFS', version: '1.0.0', request: 'GetFeature',
-    typeName: TYPENAME, outputFormat: 'application/json',
+    typeName: TYPENAME, outputFormat: 'application/json', ...extra,
   });
   const resp = await wfsFetch(`${GEOSERVER}/wfs?${params}`);
   const text = await resp.text();
@@ -44,6 +47,17 @@ async function fetchObservations() {
     if (/unknown|not find|no such/i.test(msg)) throw new AuthError('Not signed in, or this user cannot see the layer.');
     throw new Error(msg);
   }
+}
+
+async function fetchObservations() {
+  return getFeature({ propertyName: LIST_PROPERTIES });
+}
+
+// The photos of one find, as JPEG data URLs; [] when it has none.
+async function fetchPhotos(fid) {
+  const data = await getFeature({ featureID: fid, propertyName: 'photos' });
+  const stored = data.features[0]?.properties.photos;
+  return stored ? JSON.parse(stored) : [];
 }
 
 function xmlEscape(value) {
@@ -64,8 +78,9 @@ async function transaction(body) {
   return text;
 }
 
-// obs: { species, variant, lat, lon, accuracy, quantity, notes, observedAt: Date }
-// Returns the new feature id, e.g. "observations.12".
+// obs: { species, variant, lat, lon, accuracy, quantity, notes, photos, observedAt: Date },
+// photos being an array of JPEG data URLs. Returns the new feature id, e.g.
+// "observations.12".
 async function insertObservation(obs) {
   const field = (name, value) => (value === null || value === undefined || value === ''
     ? '' : `<${NS_PREFIX}:${name}>${xmlEscape(value)}</${NS_PREFIX}:${name}>`);
@@ -76,6 +91,7 @@ async function insertObservation(obs) {
     ${field('accuracy_m', obs.accuracy === null ? null : Math.round(obs.accuracy * 10) / 10)}
     ${field('quantity', obs.quantity)}
     ${field('notes', obs.notes)}
+    ${field('photos', obs.photos?.length ? JSON.stringify(obs.photos) : null)}
     <${NS_PREFIX}:geom><gml:Point srsName="EPSG:4326"><gml:coordinates>${obs.lon},${obs.lat}</gml:coordinates></gml:Point></${NS_PREFIX}:geom>
   </${NS_PREFIX}:${LAYER}></wfs:Insert>`);
   const match = text.match(/fid="([^"]+)"/);

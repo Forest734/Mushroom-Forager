@@ -12,6 +12,7 @@ Database `mushrooms`, table `observations`, published by GeoServer as
 | `accuracy_m` | real | no | GPS accuracy radius in metres |
 | `quantity` | integer | no | > 0 |
 | `notes` | text | no | free text |
+| `photos` | text | no | JSON array of JPEG data URLs, see [Photos of finds](#photos-of-finds) |
 | `geom` | geometry(Point, 4326) | yes | WGS 84 lon/lat; GiST index |
 
 ## Species
@@ -113,6 +114,25 @@ Species ids are defined in two places, and both must match:
    ```
 
    Update `schema.sql` to match, then run `setup/40-deploy-web.sh`.
+
+## Photos of finds
+
+The collector shrinks each photo to 1280 px on the long edge and re-encodes it
+as JPEG (about 150–250 KB), which also drops the camera's EXIF, GPS position
+included. A find's photos are saved together, as a JSON array of
+`data:image/jpeg;base64,…` URLs in `photos`.
+
+The map's list request leaves `photos` out (`propertyName`), so loading stays
+light however many photos there are. A popup fetches its own find's photos by
+`featureID` when it opens (`fetchPhotos()` in `store.js`). Only JPEG data URLs
+are shown, which is `PHOTO_URL` in `web/shared.js`.
+
+`schema.sql` adds the column to an existing table too. On a GeoServer set up
+before it, reload the feature type as below.
+
+On GitHub Pages the photos go to IndexedDB instead, keyed by the find's id,
+since `localStorage` holds only about 5 MB. Export writes them into each find's
+`photos` property, and Import reads them back.
 
 ## Adding a column
 

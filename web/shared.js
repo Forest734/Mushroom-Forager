@@ -49,11 +49,17 @@ for (const list of Object.values(VARIANTS)) {
 const VARIANT_BY_ID = Object.fromEntries(
   Object.values(VARIANTS).flat().map((v) => [v.id, v]));
 
-// Sign-in is off for now: the pages load straight into the app and no
-// Authorization header is sent. Set this back to true to get the overlay back —
-// the real GeoServer still refuses anonymous access to the layer, so this only
-// works against tools/dev-server.js until the access rules are relaxed too.
-const REQUIRE_LOGIN = false;
+// A photo taken with a find, as the collector saves it. Anything else — an
+// imported file can hold whatever it likes — is left out rather than shown.
+const PHOTO_URL = /^data:image\/jpeg;base64,[A-Za-z0-9+/]+=*$/;
+
+// The sign-in overlay, checked by GeoServer (or tools/dev-server.js) against
+// FORAGER_USER / FORAGER_PASSWORD in .env. Set this to false to load straight
+// into the app with no Authorization header — the real GeoServer still refuses
+// anonymous access to the layer, so that only works against the dev server
+// until the access rules are relaxed too. The Pages build never signs in: it
+// has no server to check a password, and its finds stay on the device anyway.
+const REQUIRE_LOGIN = true;
 
 class AuthError extends Error {}
 
@@ -112,7 +118,7 @@ function requireLogin(onReady) {
     location.reload();
   }));
 
-  if (!REQUIRE_LOGIN) {
+  if (!REQUIRE_LOGIN || ON_DEVICE) {
     document.querySelectorAll('[data-signout]').forEach((el) => el.remove());
     fetchObservations().then(onReady, (err) => {
       document.body.prepend(Object.assign(document.createElement('p'), {

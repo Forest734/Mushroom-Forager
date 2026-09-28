@@ -4,23 +4,25 @@ Foraging spots are private, so the layer is closed to anonymous users.
 
 ## Sign-in
 
-**The web app's sign-in is off right now.** `REQUIRE_LOGIN` in
-[`web/shared.js`](../web/shared.js) is `false`, so the pages load straight into
-the app and send no credentials, and `tools/dev-server.js` has the matching
-switch and serves WFS to anyone on localhost.
+The pages open with a sign-in form, checked against `FORAGER_USER` /
+`FORAGER_PASSWORD` in `.env` — by GeoServer, or by `tools/dev-server.js` in
+development. `REQUIRE_LOGIN` in [`web/shared.js`](../web/shared.js) and the
+matching switch in the dev server turn it off. Only the web app's own prompt
+goes then: the accounts and access rules below still exist, so a real GeoServer
+keeps refusing anonymous requests until those are relaxed as well — which would
+leave the data open to anyone who can reach the server.
 
-Set both back to `true` to get the overlay and Basic auth back. Note that only
-the web app's own prompt is off: the accounts and access rules below still
-exist, so against a real GeoServer the layer will refuse anonymous requests
-until those are relaxed as well — which would leave the data open to anyone who
-can reach the server.
+**The GitHub Pages copy has no sign-in**, whatever `REQUIRE_LOGIN` says. With
+no server, the password could only be checked in the browser, so it would have
+to ship in the public site's code, and there is nothing behind it to protect:
+each browser's finds stay in that browser.
 
 ## Logins
 
 | Account | Used by | Password in `.env` |
 |---|---|---|
 | `admin` | GeoServer admin UI, setup scripts | `GEOSERVER_ADMIN_PASSWORD` |
-| `forager` (role `FORAGER`) | the web app, phone and desktop | `FORAGER_PASSWORD` |
+| `FORAGER_USER` (role `FORAGER`) | the web app, phone and desktop | `FORAGER_PASSWORD` |
 | `mushroom` (PostgreSQL role) | GeoServer → database | `DB_PASSWORD` |
 
 `setup/30-configure-geoserver.py` replaces GeoServer's default `admin` /

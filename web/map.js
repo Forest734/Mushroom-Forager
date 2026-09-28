@@ -105,6 +105,7 @@ function popupHtml(f) {
     ${p.quantity ? `<p>Quantity: ${p.quantity}</p>` : ''}
     <p class="muted">${lat.toFixed(5)}, ${lon.toFixed(5)}${p.accuracy_m != null ? ` · ±${Math.round(p.accuracy_m)} m` : ''}</p>
     ${p.notes ? `<p class="notes">${escapeHtml(p.notes)}</p>` : ''}
+    <div class="popup-photos"></div>
     <button type="button" data-delete="${escapeHtml(f.id)}">Delete</button>
   </div>`;
 }
@@ -123,10 +124,14 @@ function render() {
   const markers = inPeriod.filter((f) => shown.has(f.properties.species)).map((f) => {
     const [lon, lat] = f.geometry.coordinates;
     const color = SPECIES_BY_ID[f.properties.species]?.color || '#888';
-    return L.circleMarker([lat, lon], {
+    const marker = L.circleMarker([lat, lon], {
       species: f.properties.species,
       radius: 8, color: '#fff', weight: 2, fillColor: color, fillOpacity: 0.95,
-    }).bindPopup(() => popupHtml(f));
+    });
+    // Built on the first open and kept, so the photos load once and
+    // popup.update(), which calls this again, doesn't throw them away.
+    let content;
+    return marker.bindPopup(() => (content ||= popupContent(f, marker)));
   });
   if (els.cluster.checked) clusterLayer.addLayers(markers); else markers.forEach((m) => plainLayer.addLayer(m));
 
@@ -156,9 +161,13 @@ async function load() {
   }
 }
 
-map.on('popupopen', (e) => {
-  const btn = e.popup.getElement().querySelector('[data-delete]');
-  if (!btn) return;
+// A find's popup: the details, a working Delete, and its photos, which aren't
+// in the list the map loads, so each popup fetches its own find's.
+function popupContent(f, marker) {
+  const el = document.createElement('div');
+  el.innerHTML = popupHtml(f);
+
+  const btn = el.querySelector('[data-delete]');
   btn.addEventListener('click', async () => {
     if (!confirm('Delete this find permanently?')) return;
     btn.disabled = true;
@@ -171,7 +180,35 @@ map.on('popupopen', (e) => {
       alert(`Delete failed: ${err.message}`);
     }
   });
-});
+
+  showPhotos(f.id, el.querySelector('.popup-photos'), () => marker.getPopup().update());
+  return el;
+}
+
+async function showPhotos(fid, box, resize) {
+  let list;
+  try {
+    list = (await fetchPhotos(fid)).filter((src) => PHOTO_URL.test(src));
+  } catch {
+    list = [];
+    box.textContent = 'Photos could not be loaded.';
+  }
+  for (const src of list) {
+    const img = Object.assign(new Image(), { src, alt: 'Photo of this find', title: 'Open full size' });
+    img.addEventListener('click', () => openPhoto(src));
+    box.append(img);
+  }
+  if (box.hasChildNodes()) resize();
+}
+
+// Opens a photo in a new tab. A tab can't be pointed at a data: URL, so it
+// gets a blob of the JPEG instead.
+function openPhoto(src) {
+  const bytes = Uint8Array.from(atob(src.slice(src.indexOf(',') + 1)), (c) => c.charCodeAt(0));
+  const url = URL.createObjectURL(new Blob([bytes], { type: 'image/jpeg' }));
+  window.open(url);
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
 
 els.period.addEventListener('change', render);
 els.cluster.addEventListener('change', render);

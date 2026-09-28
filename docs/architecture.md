@@ -49,7 +49,8 @@ the browser instead.
   [`web/store.js`](../web/store.js). `tools/build-pages.sh` copies `web/` to
   `dist/` and replaces `store.js` with
   [`pages/store.js`](../pages/store.js), which keeps the finds in
-  `localStorage` as the same GeoJSON the WFS layer returns. `collect.js` and
+  `localStorage` as the same GeoJSON the WFS layer returns, and their photos in
+  IndexedDB. `collect.js` and
   `map.js` are the same in both.
 - **`ON_DEVICE`**, set by each `store.js`, shows the `[data-device]` sections:
   **Export** on the collector, and **Export** and **Import** on the map. The

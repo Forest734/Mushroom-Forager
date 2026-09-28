@@ -157,6 +157,23 @@ label { display: grid; gap: 4px; font-size: 0.9rem; color: var(--muted); }
 
 .details { display: grid; grid-template-columns: 7rem 1fr; gap: 10px; }
 .details textarea { min-height: 44px; resize: vertical; }
+.shots { display: grid; gap: 10px; }
+.shots ul {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px;
+}
+.shots ul:empty { display: none; }
+.shots li { position: relative; }
+.shots img {
+  display: block; width: 100%; aspect-ratio: 1; object-fit: cover;
+  border-radius: 8px; background: var(--border);
+}
+.shots .remove {
+  position: absolute; top: 4px; right: 4px;
+  width: 28px; height: 28px; padding: 0; border-radius: 50%;
+  line-height: 1; font-size: 1.1rem;
+  background: rgba(0, 0, 0, 0.6); color: #fff; border: 0;
+}
 #save { width: 100%; padding: 16px; font-size: 1.1rem; }
 #status { margin: 0; min-height: 1.4em; text-align: center; }
 #status.ok { color: var(--ok); }
@@ -192,6 +209,14 @@ label { display: grid; gap: 4px; font-size: 0.9rem; color: var(--muted); }
 .popup p { margin: 2px 0; }
 .popup .latin { font-style: italic; color: var(--muted); font-size: 0.85rem; }
 .popup .notes { margin-top: 6px; white-space: pre-wrap; }
+.popup-photos:not(:empty) {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 4px;
+  margin-top: 8px; width: 240px;
+}
+.popup-photos img {
+  display: block; width: 100%; aspect-ratio: 1; object-fit: cover;
+  border-radius: 4px; cursor: zoom-in;
+}
 .popup button { margin-top: 8px; padding: 4px 10px; color: var(--danger); }
 
 .cluster {
