@@ -30,8 +30,8 @@ one-tap access.
 - **Cluster nearby finds.** Finds that are close together are grouped. Each
   group is a small pie chart of the species mix, with the total in the middle.
   Zoom in or click a group to split it.
-- **Basemap.** Use the layer control at the top right to switch between Topo
-  (the default), Streets, and Imagery.
+- **Basemap.** Use the layer control at the top right to switch between Dark
+  (the default), Streets, Topo, and Satellite.
 - **Details.** Click a point to see its time, quantity, coordinates, GPS
   accuracy, and notes.
 - **Delete.** Removes a find permanently from the database, after you confirm.
