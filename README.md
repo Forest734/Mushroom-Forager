@@ -80,6 +80,5 @@ mushroom-foraging/
     ├── store.js            load, save and delete finds over WFS
     ├── styles.css
     ├── mushroom.svg        the mushroom in the header and the tab icon
-    ├── fonts/fascinate/    display face, copied from ~/dev/assets/fonts
     └── photos/             sub-species photos + credits.html
 ```

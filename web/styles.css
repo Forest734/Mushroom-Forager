@@ -34,11 +34,8 @@ body {
   font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 h1, h2 { margin: 0; line-height: 1.2; }
-h1 { font-size: 1.45rem; }
+h1 { font-size: 1.25rem; }
 h2 { font-size: 1.05rem; }
-/* Fascinate for the name and the card headings; the rest stays system sans so
-   it holds up at small sizes on a phone. See fonts/fascinate.css. */
-h1, .card h2, .login h2 { font-family: Fascinate, "Trebuchet MS", cursive; font-weight: 400; }
 a { color: var(--accent); }
 
 header.bar {
